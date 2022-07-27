@@ -2,25 +2,36 @@ import os
 import numpy as np
 import supervisely as sly
 from dotenv import load_dotenv
-from supervisely.io.fs import get_file_name_with_ext
-
-# connect .env files
-load_dotenv("../local.env")
-project_meta = sly.ProjectMeta()
-
-exit(0)
 
 load_dotenv("local.env")
 load_dotenv(os.path.expanduser("~/supervisely.env"))
 
-# initialize API and global variables
 api = sly.Api.from_env()
 
-TEAM_ID = int(os.environ["context.teamId"])
-WORKSPACE_ID = int(os.environ["context.workspaceId"])
-PROJECT_ID = int(os.environ["modal.state.slyProjectId"])
+workspace_id = int(os.environ["context.workspaceId"])
+workspace = api.workspace.get_info_by_id(workspace_id)
+if workspace is None:
+    # You should put correct value to local.env for workspaceId
+    raise ValueError(f"Workspace (id={workspace_id}) not found.")
 
-img_path = "../data/berries.jpeg"
+# create empty project and dataset
+project = api.project.create(workspace.id, name="Demo", change_name_if_conflict=True)
+dataset = api.dataset.create(project.id, name="berries")
+
+# upload image to dataset
+image_path = "data/berries.jpeg"
+image_name = sly.fs.get_file_name_with_ext(image_path)
+image_info = api.image.upload_path(dataset.id, image_name, image_path)
+print(f"Image has been sucessfully uploaded (id={image_info.id})")
+
+# create label (rectangle) of class "strawberry"
+strawberry = sly.ObjClass(name="strawberry", geometry_type=sly.Rectangle)
+bbox = sly.Rectangle(top=127, left=1726, bottom=1087, right=2560)
+label1 = sly.Label(geometry=bbox, obj_class=strawberry)
+
+# create polygonal label of class "raspberry"
+raspberry = sly.ObjClass(name="raspberry", geometry_type=sly.Polygon)
+
 
 # classes
 classes = {
