@@ -24,12 +24,12 @@ image_name = sly.fs.get_file_name_with_ext(image_path)
 image_info = api.image.upload_path(dataset.id, image_name, image_path)
 print(f"Image has been sucessfully uploaded (id={image_info.id})")
 
-# create label (rectangle) of class "strawberry"
+# create rectangle label (bbox) of class "strawberry"
 strawberry = sly.ObjClass(name="strawberry", geometry_type=sly.Rectangle)
 bbox = sly.Rectangle(top=127, left=1726, bottom=1087, right=2560)
 label1 = sly.Label(geometry=bbox, obj_class=strawberry)
 
-# create polygonal label of class "raspberry"
+# create polygon label of class "raspberry"
 raspberry = sly.ObjClass(name="raspberry", geometry_type=sly.Polygon)
 
 
