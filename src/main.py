@@ -22,27 +22,34 @@ if workspace is None:
 ###################    create empty project and dataset    #########################
 ################################    ------    ######################################
 
-# create empty project and dataset
+# create empty project and dataset on server
 project = api.project.create(workspace.id, name="Demo", change_name_if_conflict=True)
 dataset = api.dataset.create(project.id, name="berries")
 print(f"Project has been sucessfully created, id={project.id}")
 
-# result project meta with all classes
-project_meta = sly.ProjectMeta(obj_classes=[])
+# create classes
+strawberry = sly.ObjClass("strawberry", sly.Rectangle, color=[0, 0, 255])
+raspberry = sly.ObjClass("raspberry", sly.Polygon, color=[0, 255, 0])
+blackberry = sly.ObjClass("blackberry", sly.Bitmap, color=[255, 255, 0])
+center = sly.ObjClass("center", sly.Point, color=[0, 255, 255])
+separator = sly.ObjClass("separator", sly.Polyline, color=[255, 0, 255])
+
+# create project meta with all classes and upload them to server
+project_meta = sly.ProjectMeta(
+    obj_classes=[strawberry, raspberry, blackberry, center, separator]
+)
+api.project.update_meta(project.id, project_meta.to_json())
 
 ################################    Part 2    ######################################
 ####################    create rectangle, polygon, mask    #########################
 ######################  on image "data/berries-01.jpeg"   ##########################
 
 # create rectangle label (bbox) of class "strawberry"
-strawberry = sly.ObjClass(
-    name="strawberry", geometry_type=sly.Rectangle, color=[0, 0, 255]
-)
 bbox = sly.Rectangle(top=127, left=1726, bottom=1087, right=2560)
 label1 = sly.Label(geometry=bbox, obj_class=strawberry)
 
 # create polygon label of class "raspberry"
-raspberry = sly.ObjClass(name="raspberry", geometry_type=sly.Polygon, color=[0, 255, 0])
+
 polygon = sly.Polygon(
     exterior=[
         [941, 663],
@@ -63,9 +70,7 @@ polygon = sly.Polygon(
 label2 = sly.Label(geometry=polygon, obj_class=raspberry)
 
 # create masks(sly.Bitmap) labels of class "blackberry"
-blackberry = sly.ObjClass(
-    name="blackberry", geometry_type=sly.Bitmap, color=[255, 255, 0]
-)
+
 labels_masks = []
 for mask_path in [
     "data/masks/blackberry_01.png",
@@ -109,12 +114,12 @@ print(f"Annotation has been sucessfully uploaded")
 ######################  on image "data/berries-02.jpeg"   ##########################
 
 # create point
-center = sly.ObjClass(name="center", geometry_type=sly.Point)
+
 point = sly.Point(row=320, col=1302)
 label_point = sly.Label(geometry=point, obj_class=center)
 
 # create polyline
-separator = sly.ObjClass(name="separator", geometry_type=sly.Point)
+
 polyline = sly.Polyline(
     [[443, 883], [803, 1360], [1372, 1395], [1676, 928], [1372, 458], [554, 552]]
 )
