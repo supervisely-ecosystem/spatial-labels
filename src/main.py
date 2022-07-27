@@ -22,11 +22,11 @@ if workspace is None:
 ###################    create empty project and dataset    #########################
 ################################    ------    ######################################
 
-
 # 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 project = api.project.get_info_by_name(workspace.id, "Demo")
 if project is not None:
     api.project.remove(project.id)
+# 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
 # create empty project and dataset on server
 project = api.project.create(workspace.id, name="Demo", change_name_if_conflict=True)
@@ -34,6 +34,7 @@ dataset = api.dataset.create(project.id, name="berries")
 print(f"Project has been sucessfully created, id={project.id}")
 
 # create classes
+# @TODO: need color?
 strawberry = sly.ObjClass("strawberry", sly.Rectangle)
 raspberry = sly.ObjClass("raspberry", sly.Polygon)
 blackberry = sly.ObjClass("blackberry", sly.Bitmap)
