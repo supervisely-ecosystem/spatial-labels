@@ -47,8 +47,12 @@ for mask_path in [
     "data/masks/blackberry_02.png",
     "data/masks/blackberry_03.png",
 ]:
+    # black/white, true/false, 0/1
+    # sly.Bitmap.from_path()  # add
+    # sly.Bitmap(image_bool)  # validate if dtype != bool
+
     # read only first channel of image
-    image_bw = cv2.imread(mask_path, cv2.IMREAD_GRAYSCALE)
+    image_bw = cv2.imread(mask_path)
     # image_bw has only values 0 (black) and 255 (white)
     image_bool = np.array(image_bw / 255, dtype=bool)
     # image_bool has only values False (black) and True (white)
