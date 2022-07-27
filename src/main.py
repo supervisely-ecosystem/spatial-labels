@@ -5,6 +5,10 @@ import supervisely as sly
 from dotenv import load_dotenv
 
 
+################################    Part 1    ######################################
+####################    create rectangle, polygon, mask    #########################
+################################    ------    ######################################
+
 image_path = "data/berries-01.jpeg"
 # get dimensions of image
 height, width = cv2.imread(image_path).shape[0:2]
@@ -61,13 +65,30 @@ for mask_path in [
     labels_masks.append(label)
 
 
-# result project meta with all classes
-project_meta = sly.ProjectMeta(obj_classes=[strawberry, raspberry, blackberry])
-
 # result image annotation
 all_labels = [label1, label2]  # rectangle and polygon
 all_labels.extend(labels_masks)  # add three masks to the list
-ann = sly.Annotation(img_size=[height, width], labels=all_labels)
+ann1 = sly.Annotation(img_size=[height, width], labels=all_labels)
+
+################################    Part 2    ######################################
+###################    create point, polyline, keypoints    ########################
+################################    ------    ######################################
+
+image_path = "data/berries-02.jpeg"
+# get dimensions of image
+height, width = cv2.imread(image_path).shape[0:2]
+
+berry = sly.ObjClass(name="berry", geometry_type=sly.Point)
+point1 = sly.Point
+
+
+################################    Part 3    ######################################
+########################    upload results to server    ############################
+################################    ------    ######################################
+
+# result project meta with all classes
+project_meta = sly.ProjectMeta(obj_classes=[strawberry, raspberry, blackberry])
+
 
 # init api for uploading data to server
 load_dotenv("local.env")
