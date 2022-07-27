@@ -22,21 +22,27 @@ if workspace is None:
 ###################    create empty project and dataset    #########################
 ################################    ------    ######################################
 
+
+# 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+project = api.project.get_info_by_name(workspace.id, "Demo")
+if project is not None:
+    api.project.remove(project.id)
+
 # create empty project and dataset on server
 project = api.project.create(workspace.id, name="Demo", change_name_if_conflict=True)
 dataset = api.dataset.create(project.id, name="berries")
 print(f"Project has been sucessfully created, id={project.id}")
 
 # create classes
-strawberry = sly.ObjClass("strawberry", sly.Rectangle, color=[0, 0, 255])
-raspberry = sly.ObjClass("raspberry", sly.Polygon, color=[0, 255, 0])
-blackberry = sly.ObjClass("blackberry", sly.Bitmap, color=[255, 255, 0])
-center = sly.ObjClass("center", sly.Point, color=[0, 255, 255])
-separator = sly.ObjClass("separator", sly.Polyline, color=[255, 0, 255])
+strawberry = sly.ObjClass("strawberry", sly.Rectangle)
+raspberry = sly.ObjClass("raspberry", sly.Polygon)
+blackberry = sly.ObjClass("blackberry", sly.Bitmap)
+berry_center = sly.ObjClass("berry_center", sly.Point)
+separator = sly.ObjClass("separator", sly.Polyline)
 
 # create project meta with all classes and upload them to server
 project_meta = sly.ProjectMeta(
-    obj_classes=[strawberry, raspberry, blackberry, center, separator]
+    obj_classes=[strawberry, raspberry, blackberry, berry_center, separator]
 )
 api.project.update_meta(project.id, project_meta.to_json())
 
@@ -49,10 +55,9 @@ bbox = sly.Rectangle(top=127, left=1726, bottom=1087, right=2560)
 label1 = sly.Label(geometry=bbox, obj_class=strawberry)
 
 # create polygon label of class "raspberry"
-
 polygon = sly.Polygon(
     exterior=[
-        [941, 663],
+        [941, 663],  # row, col
         [976, 874],
         [934, 1096],
         [819, 1196],
@@ -70,7 +75,6 @@ polygon = sly.Polygon(
 label2 = sly.Label(geometry=polygon, obj_class=raspberry)
 
 # create masks(sly.Bitmap) labels of class "blackberry"
-
 labels_masks = []
 for mask_path in [
     "data/masks/blackberry_01.png",
@@ -78,7 +82,7 @@ for mask_path in [
     "data/masks/blackberry_03.png",
 ]:
     # read only first channel of image
-    image_bw = cv2.imread(mask_path)
+    image_bw = cv2.imread(mask_path)[:, :, 0]
     # image_bw has only values 0 (black) and 255 (white)
     image_bool = np.array(image_bw / 255, dtype=bool)
     # image_bool has only values False (black) and True (white)
@@ -96,10 +100,6 @@ all_labels = [label1, label2]  # rectangle and polygon
 all_labels.extend(labels_masks)  # add three masks to the list
 ann = sly.Annotation(img_size=[height, width], labels=all_labels)
 
-# add classes to project before upload annotation
-project_meta = project_meta.add_obj_classes([strawberry, raspberry, blackberry])
-api.project.update_meta(project.id, project_meta.to_json())
-
 # upload image to the dataset on server
 image_name = sly.fs.get_file_name_with_ext(image_path)
 image_info = api.image.upload_path(dataset.id, image_name, image_path)
@@ -107,21 +107,27 @@ print(f"Image has been sucessfully uploaded, id={image_info.id}")
 
 # upload annotation to the image on server
 api.annotation.upload_ann(image_info.id, ann)
-print(f"Annotation has been sucessfully uploaded")
+print(f"Annotation has been sucessfully uploaded to image {image_name}")
 
 ################################    Part 3    ######################################
 #######################      create point, polyline      ###########################
 ######################  on image "data/berries-02.jpeg"   ##########################
 
-# create point
-
-point = sly.Point(row=320, col=1302)
-label_point = sly.Label(geometry=point, obj_class=center)
-
-# create polyline
+labels_points = []
+for [row, col] in [
+    [1313, 313],
+    [1714, 1061],
+    [1318, 1851],
+    [554, 1912],
+    [190, 808],
+    [941, 1094],
+]:
+    point = sly.Point(row, col)
+    label = sly.Label(geometry=point, obj_class=berry_center)
+    labels_points.append(label)
 
 polyline = sly.Polyline(
-    [[443, 883], [803, 1360], [1372, 1395], [1676, 928], [1372, 458], [554, 552]]
+    [[883, 443], [1360, 803], [1395, 1372], [928, 1676], [458, 1372], [552, 554]]
 )
 label_line = sly.Label(geometry=polyline, obj_class=separator)
 
@@ -130,11 +136,7 @@ image_path = "data/berries-02.jpeg"
 height, width = cv2.imread(image_path).shape[0:2]
 
 # result image annotation
-ann = sly.Annotation(img_size=[height, width], labels=[label_point, label_line])
-
-# add classes to project before upload annotation
-project_meta = project_meta.add_obj_classes([center, separator])
-api.project.update_meta(project.id, project_meta.to_json())
+ann = sly.Annotation(img_size=[height, width], labels=[*labels_points, label_line])
 
 # upload image to the dataset on server
 image_name = sly.fs.get_file_name_with_ext(image_path)
@@ -143,4 +145,9 @@ print(f"Image has been sucessfully uploaded, id={image_info.id}")
 
 # upload annotation to the image on server
 api.annotation.upload_ann(image_info.id, ann)
-print(f"Annotation has been sucessfully uploaded")
+print(f"Annotation has been sucessfully uploaded to image {image_name}")
+
+
+################################    Part 3    ######################################
+##########################      create keypoints     ###############################
+########################  on image "data/person.jpeg"   ############################
