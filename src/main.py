@@ -5,7 +5,7 @@ import supervisely as sly
 from dotenv import load_dotenv
 
 
-image_path = "data/berries.jpeg"
+image_path = "data/berries-01.jpeg"
 # get dimensions of image
 height, width = cv2.imread(image_path).shape[0:2]
 
