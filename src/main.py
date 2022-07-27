@@ -49,7 +49,7 @@ api.project.update_meta(project.id, project_meta.to_json())
 
 ################################    Part 2    ######################################
 ####################    create rectangle, polygon, mask    #########################
-######################  on image "data/berries-01.jpeg"   ##########################
+######################  on image "data/berries-01.jpg"   ##########################
 
 # create rectangle label (bbox) of class "strawberry"
 bbox = sly.Rectangle(top=127, left=1726, bottom=1087, right=2560)
@@ -92,7 +92,7 @@ for mask_path in [
     labels_masks.append(label)
 
 
-image_path = "data/berries-01.jpeg"
+image_path = "data/berries-01.jpg"
 # get dimensions of image
 height, width = cv2.imread(image_path).shape[0:2]
 
@@ -112,7 +112,7 @@ print(f"Annotation has been sucessfully uploaded to image {image_name}")
 
 ################################    Part 3    ######################################
 #######################      create point, polyline      ###########################
-######################  on image "data/berries-02.jpeg"   ##########################
+######################  on image "data/berries-02.jpg"   ##########################
 
 labels_points = []
 for [row, col] in [
@@ -132,7 +132,7 @@ polyline = sly.Polyline(
 )
 label_line = sly.Label(geometry=polyline, obj_class=separator)
 
-image_path = "data/berries-02.jpeg"
+image_path = "data/berries-02.jpg"
 # get dimensions of image
 height, width = cv2.imread(image_path).shape[0:2]
 
@@ -151,4 +151,4 @@ print(f"Annotation has been sucessfully uploaded to image {image_name}")
 
 ################################    Part 3    ######################################
 ##########################      create keypoints     ###############################
-########################  on image "data/person.jpeg"   ############################
+########################  on image "data/person.jpg"   ############################
