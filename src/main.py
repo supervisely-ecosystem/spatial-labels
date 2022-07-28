@@ -3,7 +3,7 @@ import cv2
 import supervisely as sly
 from dotenv import load_dotenv
 
-# init api for uploading data to server
+# init api for communicating with Supervisely Instance
 load_dotenv("local.env")
 load_dotenv(os.path.expanduser("~/supervisely.env"))
 api = sly.Api.from_env()
