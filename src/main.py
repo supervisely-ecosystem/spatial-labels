@@ -14,7 +14,7 @@ api = sly.Api.from_env()
 workspace_id = int(os.environ["context.workspaceId"])
 workspace = api.workspace.get_info_by_id(workspace_id)
 if workspace is None:
-    # You should put correct value to local.env for workspaceId
+    print("you should put correct workspaceId value to local.env")
     raise ValueError(f"Workspace with id={workspace_id} not found")
 
 
@@ -34,12 +34,12 @@ dataset = api.dataset.create(project.id, name="berries")
 print(f"Project has been sucessfully created, id={project.id}")
 
 # create classes
-# @TODO: need color?
-strawberry = sly.ObjClass("strawberry", sly.Rectangle)
-raspberry = sly.ObjClass("raspberry", sly.Polygon)
-blackberry = sly.ObjClass("blackberry", sly.Bitmap)
-berry_center = sly.ObjClass("berry_center", sly.Point)
-separator = sly.ObjClass("separator", sly.Polyline)
+strawberry = sly.ObjClass("strawberry", sly.Rectangle, color=[0, 0, 255])
+raspberry = sly.ObjClass("raspberry", sly.Polygon, color=[0, 255, 0])
+blackberry = sly.ObjClass("blackberry", sly.Bitmap, color=[255, 255, 0])
+berry_center = sly.ObjClass("berry_center", sly.Point, color=[0, 255, 255])
+separator = sly.ObjClass("separator", sly.Polyline)  # color will be generated randomly
+
 
 # create project meta with all classes and upload them to server
 project_meta = sly.ProjectMeta(
@@ -83,11 +83,9 @@ for mask_path in [
     "data/masks/blackberry_03.png",
 ]:
     # read only first channel of image
-    image_bw = cv2.imread(mask_path)[:, :, 0]
-    # image_bw has only values 0 (black) and 255 (white)
-    image_bool = np.array(image_bw / 255, dtype=bool)
-    # image_bool has only values False (black) and True (white)
-    mask = sly.Bitmap(image_bool)
+    image_black_and_white = cv2.imread(mask_path)[:, :, 0]
+    # supports masks with values (0, 1) or (0, 255) or (False, True)
+    mask = sly.Bitmap(image_black_and_white)
     label = sly.Label(geometry=mask, obj_class=blackberry)
     labels_masks.append(label)
 
@@ -108,7 +106,7 @@ print(f"Image has been sucessfully uploaded, id={image_info.id}")
 
 # upload annotation to the image on server
 api.annotation.upload_ann(image_info.id, ann)
-print(f"Annotation has been sucessfully uploaded to image {image_name}")
+print(f"Annotation has been sucessfully uploaded to the image {image_name}")
 
 ################################    Part 3    ######################################
 #######################      create point, polyline      ###########################
@@ -146,9 +144,4 @@ print(f"Image has been sucessfully uploaded, id={image_info.id}")
 
 # upload annotation to the image on server
 api.annotation.upload_ann(image_info.id, ann)
-print(f"Annotation has been sucessfully uploaded to image {image_name}")
-
-
-################################    Part 3    ######################################
-##########################      create keypoints     ###############################
-########################  on image "data/person.jpg"   ############################
+print(f"Annotation has been sucessfully uploaded to the image {image_name}")
