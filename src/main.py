@@ -1,5 +1,4 @@
 import os
-import numpy as np
 import cv2
 import supervisely as sly
 from dotenv import load_dotenv
