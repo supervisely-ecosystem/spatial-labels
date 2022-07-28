@@ -72,8 +72,9 @@ for mask_path in [
     "data/masks/blackberry_02.png",
     "data/masks/blackberry_03.png",
 ]:
-    # read only first channel of image
+    # read only first channel of an image
     image_black_and_white = cv2.imread(mask_path)[:, :, 0]
+
     # supports masks with values (0, 1) or (0, 255) or (False, True)
     mask = sly.Bitmap(image_black_and_white)
     label = sly.Label(geometry=mask, obj_class=blackberry)
