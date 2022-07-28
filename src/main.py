@@ -9,7 +9,6 @@ load_dotenv("local.env")
 load_dotenv(os.path.expanduser("~/supervisely.env"))
 api = sly.Api.from_env()
 
-
 # check the workspace exists
 workspace_id = int(os.environ["context.workspaceId"])
 workspace = api.workspace.get_info_by_id(workspace_id)
@@ -17,16 +16,9 @@ if workspace is None:
     print("you should put correct workspaceId value to local.env")
     raise ValueError(f"Workspace with id={workspace_id} not found")
 
-
 ################################    Part 1    ######################################
 ###################    create empty project and dataset    #########################
 ################################    ------    ######################################
-
-# 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-project = api.project.get_info_by_name(workspace.id, "Demo")
-if project is not None:
-    api.project.remove(project.id)
-# 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
 
 # create empty project and dataset on server
 project = api.project.create(workspace.id, name="Demo", change_name_if_conflict=True)
@@ -39,7 +31,6 @@ raspberry = sly.ObjClass("raspberry", sly.Polygon, color=[0, 255, 0])
 blackberry = sly.ObjClass("blackberry", sly.Bitmap, color=[255, 255, 0])
 berry_center = sly.ObjClass("berry_center", sly.Point, color=[0, 255, 255])
 separator = sly.ObjClass("separator", sly.Polyline)  # color will be generated randomly
-
 
 # create project meta with all classes and upload them to server
 project_meta = sly.ProjectMeta(
@@ -89,9 +80,7 @@ for mask_path in [
     label = sly.Label(geometry=mask, obj_class=blackberry)
     labels_masks.append(label)
 
-
 image_path = "data/berries-01.jpg"
-# get dimensions of image
 height, width = cv2.imread(image_path).shape[0:2]
 
 # result image annotation
@@ -112,6 +101,7 @@ print(f"Annotation has been sucessfully uploaded to the image {image_name}")
 #######################      create point, polyline      ###########################
 ######################  on image "data/berries-02.jpg"   ##########################
 
+# create points
 labels_points = []
 for [row, col] in [
     [1313, 313],
@@ -125,13 +115,13 @@ for [row, col] in [
     label = sly.Label(geometry=point, obj_class=berry_center)
     labels_points.append(label)
 
+# create polyline
 polyline = sly.Polyline(
     [[883, 443], [1360, 803], [1395, 1372], [928, 1676], [458, 1372], [552, 554]]
 )
 label_line = sly.Label(geometry=polyline, obj_class=separator)
 
 image_path = "data/berries-02.jpg"
-# get dimensions of image
 height, width = cv2.imread(image_path).shape[0:2]
 
 # result image annotation
