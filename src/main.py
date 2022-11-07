@@ -68,9 +68,9 @@ label2 = sly.Label(geometry=polygon, obj_class=raspberry)
 # create masks(sly.Bitmap) labels of class "blackberry"
 labels_masks = []
 for mask_path in [
-    "data/masks/blackberry_01.png",
-    "data/masks/blackberry_02.png",
-    "data/masks/blackberry_03.png",
+    "data/masks/Blackberry_01.png",
+    "data/masks/Blackberry_02.png",
+    "data/masks/Blackberry_03.png",
 ]:
     # read only first channel of an image
     image_black_and_white = cv2.imread(mask_path)[:, :, 0]
