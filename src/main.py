@@ -9,7 +9,7 @@ load_dotenv(os.path.expanduser("~/supervisely.env"))
 api = sly.Api.from_env()
 
 # check the workspace exists
-workspace_id = int(os.environ["context.workspaceId"])
+workspace_id = int(os.environ["WORKSPACE_ID"])
 workspace = api.workspace.get_info_by_id(workspace_id)
 if workspace is None:
     print("you should put correct workspaceId value to local.env")
