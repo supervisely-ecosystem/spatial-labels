@@ -4,16 +4,14 @@ import supervisely as sly
 from dotenv import load_dotenv
 
 # init api for communicating with Supervisely Instance
-load_dotenv("local.env")
-load_dotenv(os.path.expanduser("~/supervisely.env"))
+if sly.is_development():
+    load_dotenv("local.env")
+    load_dotenv(os.path.expanduser("~/supervisely.env"))
 api = sly.Api.from_env()
 
 # check the workspace exists
-workspace_id = int(os.environ["WORKSPACE_ID"])
+workspace_id = sly.env.workspace_id()
 workspace = api.workspace.get_info_by_id(workspace_id)
-if workspace is None:
-    print("you should put correct workspaceId value to local.env")
-    raise ValueError(f"Workspace with id={workspace_id} not found")
 
 ################################    Part 1    ######################################
 ###################    create empty project and dataset    #########################
