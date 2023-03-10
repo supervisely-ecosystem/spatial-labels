@@ -22,7 +22,9 @@ Learn more [about Supervisely Annotation JSON format here](../../api-references/
 
 ![Points and polyline](https://user-images.githubusercontent.com/12828725/181513722-1d8e44ad-9580-460c-aebe-8e836920cc1b.png)
 
-ℹ️ Everything you need to reproduce [this tutorial is on GitHub](https://github.com/supervisely-ecosystem/spatial-labels): source code, Visual Studio Code configuration, and a shell script for creating virtual env.
+{% hint style="info" %}
+Everything you need to reproduce [this tutorial is on GitHub](https://github.com/supervisely-ecosystem/spatial-labels): source code, Visual Studio Code configuration, and a shell script for creating virtual env.
+{% endhint %}
 
 ## How to debug this tutorial
 
@@ -44,8 +46,8 @@ code -r .
 
 **Step 4.**   change ✅ workspace ID ✅ in `local.env` file by copying the ID from the context menu of the workspace. A new project with annotated images will be created in the workspace you define:
 
-```
-context.workspaceId=506 # ⬅️ change value
+```python
+WORKSPACE_ID=506 # ⬅️ change value
 ```
 
 ![Copy workspace ID from context menu](https://user-images.githubusercontent.com/12828725/181572645-f042c4d0-fcb5-48db-bf11-b74b3c37e031.gif)
@@ -78,7 +80,7 @@ api = sly.Api.from_env()
 With next lines we will check the you did everything right - API client initialized with correct credentials and you defined the correct workspace ID in `local.env`.
 
 ```python
-workspace_id = int(os.environ["context.workspaceId"])
+workspace_id = sly.env.workspace_id()
 workspace = api.workspace.get_info_by_id(workspace_id)
 if workspace is None:
     print("you should put correct workspaceId value to local.env")
@@ -174,9 +176,9 @@ Mask has to be the same size as the image&#x20;
 ```python
 labels_masks = []
 for mask_path in [
-    "data/masks/blackberry_01.png",
-    "data/masks/blackberry_02.png",
-    "data/masks/blackberry_03.png",
+    "data/masks/Blackberry_01.png",
+    "data/masks/Blackberry_02.png",
+    "data/masks/Blackberry_03.png",
 ]:
     # read only first channel of an image
     image_black_and_white = cv2.imread(mask_path)[:, :, 0]
@@ -247,6 +249,9 @@ label_line = sly.Label(geometry=polyline, obj_class=separator)
 ### Upload the second image with annotation&#x20;
 
 ```python
+image_path = "data/berries-02.jpg"
+height, width = cv2.imread(image_path).shape[0:2]
+
 # result image annotation
 ann = sly.Annotation(img_size=[height, width], labels=[*labels_points, label_line])
 
@@ -257,7 +262,7 @@ print(f"Image has been sucessfully uploaded, id={image_info.id}")
 
 # upload annotation to the image on server
 api.annotation.upload_ann(image_info.id, ann)
-print(f"Annotation has been sucessfully uploaded to the image {image_name}")pyth
+print(f"Annotation has been sucessfully uploaded to the image {image_name}")
 ```
 
 In the [GitHub repository for this tutorial](https://github.com/supervisely-ecosystem/spatial-labels), you will find the [full python script](https://github.com/supervisely-ecosystem/spatial-labels/blob/master/src/main.py).
